@@ -13,7 +13,7 @@ public class DigitalExperience {
     private ExperienceType type;
     private String title;
     private String slug;
-    private String decription;
+    private String description;
     private boolean active;
     private LocalDateTime createdAt;
     private List<ExperienceLink> links;
