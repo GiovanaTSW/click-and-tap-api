@@ -1,0 +1,21 @@
+# Keep secrets and junk out of the build context (and therefore out of the image).
+.git
+.github
+.gradle
+.idea
+build
+out
+*.iml
+
+# application-dev.properties holds local secrets; it must never end up inside the jar of an image.
+src/main/resources/application-dev.properties
+
+.env
+.env.*
+!.env.example
+
+Dockerfile
+docker-compose.yml
+.dockerignore
+*.md
+scripts

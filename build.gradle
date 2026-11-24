@@ -26,6 +26,9 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// Health endpoint for Docker and deployment checks (only /actuator/health is exposed)
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	// OpenAPI / Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.1'
 
@@ -47,6 +50,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	// Integration tests run against a real PostgreSQL started in Docker (version managed by the Boot BOM)
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
@@ -54,4 +59,12 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Build a single executable jar with a predictable name (used by the Dockerfile).
+tasks.named('jar') {
+	enabled = false
+}
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar'
 }
