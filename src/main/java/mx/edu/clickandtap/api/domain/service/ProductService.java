@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +58,21 @@ public class ProductService {
             throw new BadRequestException("Price must be zero or greater");
         }
         if (p.getStock() == null || p.getStock() < 0) throw new BadRequestException("Stock must be zero or greater");
+        validateImageUrl(p);
+    }
+
+    /** Only web URLs are accepted: javascript:, data: and similar schemes could run code in a client. */
+    private void validateImageUrl(Product p) {
+        String url = p.getImageUrl();
+        if (url == null || url.isBlank()) {
+            p.setImageUrl(null);
+            return;
+        }
+        String trimmed = url.trim();
+        String lower = trimmed.toLowerCase(Locale.ROOT);
+        if (!lower.startsWith("https://") && !lower.startsWith("http://")) {
+            throw new BadRequestException("Image url must start with http:// or https://");
+        }
+        p.setImageUrl(trimmed);
     }
 }

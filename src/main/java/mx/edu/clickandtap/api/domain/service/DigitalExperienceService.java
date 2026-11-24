@@ -83,6 +83,7 @@ public class DigitalExperienceService {
         for (ExperienceLink link : links) {
             if (link.getLabel() == null || link.getLabel().isBlank()) throw new BadRequestException("Link label is required");
             validateUrl(link.getUrl());
+            link.setUrl(link.getUrl().trim());
             link.setId(null);
             link.setPosition(position++);
             result.add(link);

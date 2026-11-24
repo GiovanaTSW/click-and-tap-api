@@ -2,6 +2,7 @@ package mx.edu.clickandtap.api.web.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,10 @@ import mx.edu.clickandtap.api.domain.User;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Size limits mirror the database columns (see db/migration), so oversized input is rejected
+ * with a clear 400 instead of reaching PostgreSQL.
+ */
 public final class ApiDto {
     private ApiDto() {}
 
@@ -29,12 +34,15 @@ public final class ApiDto {
 
     // ---------- Auth ----------
     public record RegisterRequest(
-            @NotBlank String name,
-            @NotBlank @Email String email,
-            @NotBlank @Size(min = 8, max = 100) String password,
-            String phone) {}
+            @NotBlank @Size(max = 120) String name,
+            @NotBlank @Email @Size(max = 160) String email,
+            // BCrypt only uses the first 72 bytes of a password.
+            @NotBlank @Size(min = 8, max = 72) String password,
+            @Size(max = 30) String phone) {}
 
-    public record LoginRequest(@NotBlank @Email String email, @NotBlank String password) {}
+    public record LoginRequest(
+            @NotBlank @Email @Size(max = 160) String email,
+            @NotBlank @Size(max = 72) String password) {}
 
     public record UserResponse(Long id, String name, String email, String phone, Role role) {
         public static UserResponse from(User u) {
@@ -46,12 +54,12 @@ public final class ApiDto {
 
     // ---------- Productos ----------
     public record ProductRequest(
-            @NotBlank String name,
-            String description,
+            @NotBlank @Size(max = 150) String name,
+            @Size(max = 2000) String description,
             @NotNull ProductType type,
             @NotNull @PositiveOrZero BigDecimal price,
             @NotNull @PositiveOrZero Integer stock,
-            String imageUrl,
+            @Size(max = 500) String imageUrl,
             Boolean customizable,
             Boolean active) {
         public Product toDomain() {
@@ -71,12 +79,12 @@ public final class ApiDto {
     // ---------- Pedidos ----------
     public record OrderItemRequest(
             @NotNull Long productId,
-            @NotNull @Positive Integer quantity,
-            String customizationNotes) {}
+            @NotNull @Positive @Max(100) Integer quantity,
+            @Size(max = 500) String customizationNotes) {}
 
     public record OrderRequest(
-            @NotBlank String shippingAddress,
-            @NotEmpty @Valid List<OrderItemRequest> items) {
+            @NotBlank @Size(max = 500) String shippingAddress,
+            @NotEmpty @Size(max = 50) @Valid List<OrderItemRequest> items) {
         public List<OrderItem> toItems() {
             return items.stream().map(i -> {
                 OrderItem item = new OrderItem();
@@ -92,18 +100,18 @@ public final class ApiDto {
 
     // ---------- Experiencias digitales ----------
     public record LinkRequest(
-            @NotBlank String label,
-            @NotBlank String url,
-            String icon,
+            @NotBlank @Size(max = 100) String label,
+            @NotBlank @Size(max = 500) String url,
+            @Size(max = 50) String icon,
             Boolean active) {}
 
     public record ExperienceRequest(
             @NotNull ExperienceType type,
-            @NotBlank String title,
-            String slug,
-            String description,
+            @NotBlank @Size(max = 150) String title,
+            @Size(max = 100) String slug,
+            @Size(max = 2000) String description,
             Boolean active,
-            @Valid List<LinkRequest> links) {
+            @Size(max = 20) @Valid List<LinkRequest> links) {
         public DigitalExperience toDomain() {
             DigitalExperience e = new DigitalExperience();
             e.setType(type);

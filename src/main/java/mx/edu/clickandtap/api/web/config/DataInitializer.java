@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 @Slf4j
 @Component
@@ -40,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createAdmin() {
         if (adminEmail.isBlank() || adminPassword.isBlank()) return;
-        if (userRepository.existsByEmail(adminEmail.trim().toLowerCase())) return;
+        if (userRepository.existsByEmail(adminEmail.trim().toLowerCase(Locale.ROOT))) return;
         User admin = userService.register(adminName, adminEmail, adminPassword, null);
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
