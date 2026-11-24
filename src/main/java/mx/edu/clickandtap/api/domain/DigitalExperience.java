@@ -2,7 +2,7 @@ package mx.edu.clickandtap.api.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Getter @Setter
@@ -15,6 +15,6 @@ public class DigitalExperience {
     private String slug;
     private String description;
     private boolean active;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private List<ExperienceLink> links;
 }

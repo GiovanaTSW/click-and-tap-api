@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mx.edu.clickandtap.api.domain.OrderStatus;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +23,14 @@ public class OrderEntity {
     @Column(name = "shipping_address")
     private String shippingAddress;
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemEntity> items = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (createdAt == null) createdAt = Instant.now();
         if (status == null) status = OrderStatus.PENDING;
     }
 }

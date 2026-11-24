@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 public class OrderItem {
     private Long id;
     private Long productId;
+    /** Name of the product when the order was placed (snapshot). */
+    private String productName;
     private Integer quantity;
     private BigDecimal unitPrice;
     private String customizationNotes;

@@ -49,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createSampleProducts() {
-        if (!productRepository.getAllActive().isEmpty()) return;
+        if (productRepository.count() > 0) return;
         save("Placa NFC personalizada", "Placa con chip NFC y grabado personalizado", ProductType.PLATE, "249.00", 30);
         save("Llavero NFC", "Llavero con chip NFC", ProductType.KEYCHAIN, "99.50", 50);
         save("Sticker QR", "Sticker resistente con código QR", ProductType.STICKER, "39.00", 100);

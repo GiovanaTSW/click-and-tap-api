@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import mx.edu.clickandtap.api.domain.Role;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter @Setter
 @Entity
@@ -21,11 +21,11 @@ public class UserEntity {
     private Role role;
     private boolean active;
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @PrePersist
     void onCreate() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (createdAt == null) createdAt = Instant.now();
         if (role == null) role = Role.CUSTOMER;
     }
 }

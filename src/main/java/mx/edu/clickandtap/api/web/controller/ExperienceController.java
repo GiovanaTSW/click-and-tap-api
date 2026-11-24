@@ -2,9 +2,10 @@ package mx.edu.clickandtap.api.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import mx.edu.clickandtap.api.domain.DigitalExperience;
 import mx.edu.clickandtap.api.domain.service.DigitalExperienceService;
 import mx.edu.clickandtap.api.web.dto.ApiDto.ExperienceRequest;
+import mx.edu.clickandtap.api.web.dto.ApiDto.ExperienceResponse;
+import mx.edu.clickandtap.api.web.dto.ApiDto.ExperienceUpdateRequest;
 import mx.edu.clickandtap.api.web.security.AuthenticatedUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,26 +29,27 @@ public class ExperienceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DigitalExperience create(@AuthenticationPrincipal AuthenticatedUser user,
-                                    @Valid @RequestBody ExperienceRequest r) {
-        return experienceService.create(user.id(), r.toDomain());
+    public ExperienceResponse create(@AuthenticationPrincipal AuthenticatedUser user,
+                                     @Valid @RequestBody ExperienceRequest r) {
+        return ExperienceResponse.from(experienceService.create(user.id(), r.toDomain()));
     }
 
+    /** My experiences. Not paginated: a user is expected to have a handful of them. */
     @GetMapping
-    public List<DigitalExperience> mine(@AuthenticationPrincipal AuthenticatedUser user) {
-        return experienceService.getByUser(user.id());
+    public List<ExperienceResponse> mine(@AuthenticationPrincipal AuthenticatedUser user) {
+        return experienceService.getByUser(user.id()).stream().map(ExperienceResponse::from).toList();
     }
 
     @GetMapping("/{id}")
-    public DigitalExperience get(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
-        return experienceService.getOwned(id, user.id(), user.isAdmin());
+    public ExperienceResponse get(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
+        return ExperienceResponse.from(experienceService.getOwned(id, user.id(), user.isAdmin()));
     }
 
     @PutMapping("/{id}")
-    public DigitalExperience update(@PathVariable Long id,
-                                    @AuthenticationPrincipal AuthenticatedUser user,
-                                    @Valid @RequestBody ExperienceRequest r) {
-        return experienceService.update(id, user.id(), user.isAdmin(), r.toDomain());
+    public ExperienceResponse update(@PathVariable Long id,
+                                     @AuthenticationPrincipal AuthenticatedUser user,
+                                     @Valid @RequestBody ExperienceUpdateRequest r) {
+        return ExperienceResponse.from(experienceService.update(id, user.id(), user.isAdmin(), r.toDomain()));
     }
 
     @DeleteMapping("/{id}")

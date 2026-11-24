@@ -2,8 +2,10 @@ package mx.edu.clickandtap.api.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import mx.edu.clickandtap.api.domain.exception.BadRequestException;
+import mx.edu.clickandtap.api.domain.exception.ConflictException;
 import mx.edu.clickandtap.api.domain.exception.ForbiddenException;
 import mx.edu.clickandtap.api.domain.exception.NotFoundException;
+import mx.edu.clickandtap.api.domain.exception.TooManyRequestsException;
 import mx.edu.clickandtap.api.domain.exception.UnauthorizedException;
 import mx.edu.clickandtap.api.web.dto.ApiDto.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,6 +43,16 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> unauthorized(UnauthorizedException e) { return build(HttpStatus.UNAUTHORIZED, e.getMessage()); }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ErrorResponse> tooManyRequests(TooManyRequestsException e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(e.getRetryAfterSeconds()))
+                .body(new ErrorResponse(HttpStatus.TOO_MANY_REQUESTS.value(), e.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> stateConflict(ConflictException e) { return build(HttpStatus.CONFLICT, e.getMessage()); }
 
     /** Real conflicts (duplicate email, product still referenced by orders). Input sizes are validated in the DTOs. */
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -2,7 +2,7 @@ package mx.edu.clickandtap.api.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter @Setter
 public class User {
@@ -13,5 +13,5 @@ public class User {
     private String phone;
     private Role role;
     private boolean active;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }
